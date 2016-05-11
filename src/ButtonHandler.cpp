@@ -1,8 +1,8 @@
-//
-// Created by Christian Gärtner on 08.05.16.
-//
-
 #include "ButtonHandler.h"
+
+ButtonHandler::ButtonHandler(int activeOn) {
+    this->activeOn = activeOn;
+}
 
 void ButtonHandler::initPinMode(void (*pinMode)(uint8_t, uint8_t)) {
     pinMode(START_BUTTON, INPUT);
@@ -15,7 +15,7 @@ void ButtonHandler::initPinMode(void (*pinMode)(uint8_t, uint8_t)) {
     pinMode(LANE_4, INPUT);
 }
 
-boolean ButtonHandler::debounce(int arrayKey, uint8_t pin) {
+bool ButtonHandler::debounce(int arrayKey, uint8_t pin) {
     int current = digitalRead(pin);
 
     if (last[arrayKey] != current)
@@ -26,7 +26,7 @@ boolean ButtonHandler::debounce(int arrayKey, uint8_t pin) {
 
     last[arrayKey] = current;
 
-    return current == HIGH;
+    return current == activeOn;
 }
 
 

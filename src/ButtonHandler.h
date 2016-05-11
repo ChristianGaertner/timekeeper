@@ -1,7 +1,3 @@
-//
-// Created by Christian Gärtner on 08.05.16.
-//
-
 #ifndef TIMEKEEPING_BUTTONHANDLER_H
 #define TIMEKEEPING_BUTTONHANDLER_H
 
@@ -22,35 +18,37 @@ const int LANE_4 = 9;
 class ButtonHandler {
 
 public:
-    boolean startButton() {
+    ButtonHandler(int activeOn = HIGH);
+    bool startButton() {
         return debounce(0, START_BUTTON);
     }
-    boolean softButton1() {
-        return debounce(0, SB_1);
+    bool softButton1() {
+        return debounce(1, SB_1);
     }
 
-    boolean softButton2() {
-        return debounce(0, SB_2);
+    bool softButton2() {
+        return debounce(2, SB_2);
     }
 
-    boolean lane1() {
-        return debounce(0, LANE_1);
+    bool lane1() {
+        return debounce(3, LANE_1);
     }
 
-    boolean lane2() {
-        return debounce(0, LANE_2);
+    bool lane2() {
+        return debounce(4, LANE_2);
     }
 
-    boolean lane3() {
-        return debounce(0, LANE_3);
+    bool lane3() {
+        return debounce(5, LANE_3);
     }
 
     boolean lane4() {
-        return debounce(0, LANE_4);
+        return debounce(6, LANE_4);
     }
 
     void initPinMode(void (*pinMode)(uint8_t, uint8_t));
 private:
+    int activeOn;
     boolean debounce(int arrayKey, uint8_t pin);
     int last[NUM_BUTTONS];
 };

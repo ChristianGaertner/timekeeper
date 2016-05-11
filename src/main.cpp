@@ -1,13 +1,9 @@
-/**
- * Blink
- *
- * Turns on an LED on for one second,
- * then off for one second, repeatedly.
- */
 #include "Arduino.h"
 #include "ButtonHandler.h"
+#include "TimeKeeper.h"
 
 ButtonHandler handler;
+TimeKeeper timer;
 
 void setup()
 {
@@ -18,66 +14,58 @@ void setup()
     Serial.println("booted");
 }
 
-long startTime;
-long lane1Time;
-long lane2Time;
-long lane3Time;
-long lane4Time;
-
-
-boolean running = false;
-
-long startButtonDisabled = 0;
-
 void loop()
 {
-    if (startButtonDisabled > 0)
-    {
-        delay(1);
-        startButtonDisabled--;
-    }
 
-    if (!running) {
-        startTime = millis();
-        if (!startButtonDisabled && handler.startButton())
+    if (!timer.running()) {
+        if (handler.startButton())
         {
-            running = true;
+            while(handler.startButton()); // block until button has been released.
+            timer.start();
             Serial.println("==Started==");
-            startButtonDisabled = 2000;
         }
         return;
     }
 
-    if (lane1Time == 0 && handler.lane1())
+    if (handler.lane1() && timer.triggerLane(0))
     {
-        lane1Time = millis();
         Serial.println("LANE 1: stopped");
     }
-    if (lane2Time == 0 && handler.lane2())
+    if (handler.lane2() && timer.triggerLane(1))
     {
-        lane2Time = millis();
         Serial.println("LANE 2: stopped");
     }
-    if (lane3Time == 0 && handler.lane3())
+    if (handler.lane3() && timer.triggerLane(2))
     {
-        lane3Time = millis();
         Serial.println("LANE 3: stopped");
     }
-    if (lane4Time == 0 && handler.lane4())
+    if (handler.lane4() && timer.triggerLane(3))
     {
-        lane4Time = millis();
         Serial.println("LANE 4: stopped");
     }
 
-    if (!startButtonDisabled && handler.startButton())
+
+    if (millis() % 500 < 50) {
+        digitalWrite(LED_BUILTIN, HIGH);
+    } else if (millis() % 100 < 50) {
+        digitalWrite(LED_BUILTIN, LOW);
+    }
+
+    if (handler.startButton() || timer.allFinished())
     {
+        unsigned long results[4];
+        timer.stop();
+
+        while(handler.startButton()); // block until button has been released.
+
+        timer.results(results);
+
         Serial.println("++STOPPED++");
-        Serial.print("LANE 1: "); Serial.println(lane1Time - startTime);
-        Serial.print("LANE 2: "); Serial.println(lane2Time - startTime);
-        Serial.print("LANE 3: "); Serial.println(lane3Time - startTime);
-        Serial.print("LANE 4: "); Serial.println(lane4Time - startTime);
-        running = false;
-        lane1Time = lane2Time = lane3Time = lane4Time = 0;
-        startButtonDisabled = 2000;
+        for (int i = 0; i < NUM_LANES; ++i) {
+            Serial.print("LANE ");
+            Serial.print(String(i + 1, DEC));
+            Serial.print(": ");
+            Serial.println(String(results[i], DEC));
+        }
     }
 }

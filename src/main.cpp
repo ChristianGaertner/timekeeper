@@ -2,16 +2,63 @@
 #include "ButtonHandler.h"
 #include "TimeKeeper.h"
 
+
+#include "Adafruit_GFX.h"
+#include "Adafruit_ST7735.h"
+#include "SPI.h" // needed by Adafruit_ST7735.h
+
+#define SOFTWARE_VERSION "v0.0.1-SNAPSHOT"
+
+
+#define TFT_CS     10
+#define TFT_RST    0
+#define TFT_DC     14
+
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
+
 ButtonHandler handler;
 TimeKeeper timer;
 
 void setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
-    handler.initPinMode(pinMode);
-
     Serial.begin(9600);
-    Serial.println("booted");
+    Serial.println("TimeKeeping");
+    Serial.println("(c) 2016");
+    Serial.println("(c) Christian Gaertner - cpgaertner.de");
+    Serial.println(SOFTWARE_VERSION);
+
+
+    Serial.println("init screen");
+    tft.initR(INITR_BLACKTAB);
+    tft.fillScreen(ST7735_BLACK);
+
+    tft.setCursor(25, 20);
+    tft.setTextWrap(false);
+    tft.setTextColor(ST7735_RED);
+    tft.setTextSize(1);
+    tft.println("KGMSI Westwand");
+    tft.setCursor(32, tft.getCursorY());
+    tft.println("TimeKeeping");
+    tft.println();
+
+    tft.setTextColor(ST7735_WHITE);
+    tft.setCursor(40, tft.getCursorY());
+    tft.println("(c) 2016");
+
+    tft.println();
+    tft.println();
+    tft.setCursor(15, tft.getCursorY());
+    tft.println("Christian Gaertner");
+    tft.setCursor(0, tft.getCursorY());
+    tft.println("Software Technologies");
+    tft.setCursor(25, tft.getCursorY());
+    tft.println("cpgaertner.de");
+
+    tft.setCursor(0, 150);
+    tft.println(SOFTWARE_VERSION);
+
+    Serial.println("init buttons");
+    handler.initPinMode(pinMode);
 }
 
 void loop()
@@ -42,13 +89,6 @@ void loop()
     if (handler.lane4() && timer.triggerLane(3))
     {
         Serial.println("LANE 4: stopped");
-    }
-
-
-    if (millis() % 500 < 50) {
-        digitalWrite(LED_BUILTIN, HIGH);
-    } else if (millis() % 100 < 50) {
-        digitalWrite(LED_BUILTIN, LOW);
     }
 
     if (handler.startButton() || timer.allFinished())

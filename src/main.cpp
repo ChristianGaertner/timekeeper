@@ -6,6 +6,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_ST7735.h"
 #include "SPI.h" // needed by Adafruit_ST7735.h
+#include "UIKit.h"
 
 #define SOFTWARE_VERSION "v0.0.1-SNAPSHOT"
 
@@ -14,10 +15,9 @@
 #define TFT_RST    0
 #define TFT_DC     14
 
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
-
 ButtonHandler handler;
 TimeKeeper timer;
+UIKit ui = UIKit(Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST), &timer, SOFTWARE_VERSION);
 
 void setup()
 {
@@ -28,41 +28,20 @@ void setup()
     Serial.println(SOFTWARE_VERSION);
 
 
-    Serial.println("init screen");
-    tft.initR(INITR_BLACKTAB);
-    tft.fillScreen(ST7735_BLACK);
+    Serial.println("=> init screen");
+    ui.init();
+    ui.renderSplashScreen();
 
-    tft.setCursor(25, 20);
-    tft.setTextWrap(false);
-    tft.setTextColor(ST7735_RED);
-    tft.setTextSize(1);
-    tft.println("KGMSI Westwand");
-    tft.setCursor(32, tft.getCursorY());
-    tft.println("TimeKeeping");
-    tft.println();
-
-    tft.setTextColor(ST7735_WHITE);
-    tft.setCursor(40, tft.getCursorY());
-    tft.println("(c) 2016");
-
-    tft.println();
-    tft.println();
-    tft.setCursor(15, tft.getCursorY());
-    tft.println("Christian Gaertner");
-    tft.setCursor(0, tft.getCursorY());
-    tft.println("Software Technologies");
-    tft.setCursor(25, tft.getCursorY());
-    tft.println("cpgaertner.de");
-
-    tft.setCursor(0, 150);
-    tft.println(SOFTWARE_VERSION);
-
-    Serial.println("init buttons");
+    Serial.println("=> init buttons");
     handler.initPinMode(pinMode);
+    delay(1000); // hold splash screen for one second
+    Serial.println("=> Booted!");
+    ui.clear();
 }
 
 void loop()
 {
+    ui.renderScreen();
 
     if (!timer.running()) {
         if (handler.startButton())

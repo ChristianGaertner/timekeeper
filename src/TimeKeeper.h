@@ -32,6 +32,8 @@ public:
 
     bool allFinished();
 
+    unsigned long elapsedTime();
+
 private:
     bool _running;
     unsigned long startTime;

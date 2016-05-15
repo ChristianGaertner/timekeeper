@@ -50,4 +50,4 @@ add_custom_target(
 # To enable code auto-completion, please specify path
 # to main source file (*.c, *.cpp) and uncomment line below
 #
-add_executable(timekeeping src/main.cpp src/ButtonHandler.cpp src/ButtonHandler.h src/TimeKeeper.cpp src/TimeKeeper.h)
+add_executable(timekeeping src/main.cpp src/ButtonHandler.cpp src/ButtonHandler.h src/TimeKeeper.cpp src/TimeKeeper.h src/menus.cpp src/UIKit.cpp src/UIKit.h)

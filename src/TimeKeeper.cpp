@@ -90,6 +90,16 @@ bool TimeKeeper::allFinished() {
     return allFinished;
 }
 
+unsigned long TimeKeeper::elapsedTime() {
+    if (!_running) {
+        return 0;
+    }
+
+    return millis() - startTime;
+}
+
+
+
 
 
 
